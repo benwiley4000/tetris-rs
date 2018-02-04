@@ -6,7 +6,7 @@ use sdl2::keyboard::Keycode;
 use sdl2::render::{Canvas, Texture, TextureCreator};
 use sdl2::rect::Rect;
 use sdl2::video::{Window, WindowContext};
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 use std::thread::sleep;
 
 const TEXTURE_SIZE: u32 = 32;
@@ -61,10 +61,14 @@ pub fn main() {
     let green_square = create_texture_rect(&mut canvas,
             &texture_creator, TextureColor::Green, TEXTURE_SIZE)
         .expect("Failed to create a texture");
-    let square_texture = &green_square;
+    let blue_square = create_texture_rect(&mut canvas,
+            &texture_creator, TextureColor::Blue, TEXTURE_SIZE)
+        .expect("Failed to create a texture");
 
     let mut event_pump = sdl_context.event_pump()
         .expect("Failed to get SDL event pump");
+
+    let start_time = SystemTime::now();
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -79,6 +83,13 @@ pub fn main() {
 
         canvas.set_draw_color(Color::RGB(255, 0, 0)); // red
         canvas.clear();
+
+        let square_texture =
+            if start_time.elapsed().expect("Elapsed fail").as_secs() % 2 == 0 {
+                &green_square
+            } else {
+                &blue_square
+            };
 
         canvas.copy(square_texture,
                 None,
