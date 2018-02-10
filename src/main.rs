@@ -6,6 +6,7 @@ use sdl2::keyboard::Keycode;
 use sdl2::render::{Canvas, Texture, TextureCreator};
 use sdl2::rect::Rect;
 use sdl2::video::{Window, WindowContext};
+use sdl2::image::{LoadTexture, INIT_PNG, INIT_JPG};
 use std::time::{Duration, SystemTime};
 use std::thread::sleep;
 
@@ -65,6 +66,12 @@ pub fn main() {
             &texture_creator, TextureColor::Blue, TEXTURE_SIZE)
         .expect("Failed to create a texture");
 
+    sdl2::image::init(INIT_PNG | INIT_JPG)
+        .expect("Couldn't initialize image context");
+
+    let image_texture = texture_creator.load_texture("assets/cat.jpg")
+        .expect("Couldn't load image");
+
     let mut event_pump = sdl_context.event_pump()
         .expect("Failed to get SDL event pump");
 
@@ -83,6 +90,8 @@ pub fn main() {
 
         canvas.set_draw_color(Color::RGB(255, 0, 0)); // red
         canvas.clear();
+
+        canvas.copy(&image_texture, None, None).expect("Render failed");
 
         let square_texture =
             if start_time.elapsed().expect("Elapsed fail").as_secs() % 2 == 0 {
